@@ -181,8 +181,8 @@ function App() {
   return (
     <div className="flex flex-col items-center min-h-screen w-full bg-ui-bg-subtle p-6 overflow-auto">
       <Toaster />
-      <Container className="w-full max-w-4xl p-6 flex flex-col gap-4">
-        <div className="flex justify-between items-center">
+      <Container className="w-full max-w-4xl p-4 sm:p-6 flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
             <Heading level="h1">Report Generator</Heading>
             <Text className="text-ui-fg-subtle">
@@ -190,11 +190,11 @@ function App() {
             </Text>
           </div>
           {selectedFiles.length > 0 && (
-            <div className="flex gap-2">
-              <Button variant="secondary" onClick={() => setSelectedFiles([])}>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button variant="secondary" className="flex-1 sm:flex-none justify-center" onClick={() => setSelectedFiles([])}>
                 Cancel
               </Button>
-              <Button onClick={handleBulkDownload}>
+              <Button className="flex-1 sm:flex-none justify-center" onClick={handleBulkDownload}>
                 <ArrowDownTray className="mr-2" />
                 Download ({selectedFiles.length})
               </Button>

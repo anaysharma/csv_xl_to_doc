@@ -62,7 +62,7 @@ export function PreviewDrawer({ open, onClose, file }) {
             <Badge>{file.data?.students?.length || 0} Students</Badge>
           </div>
         </Drawer.Header>
-        <Drawer.Body className="flex-1 overflow-auto bg-gray-100 p-8 flex justify-center">
+        <Drawer.Body className="flex-1 overflow-auto bg-gray-100 p-4 sm:p-8 flex justify-center">
           {loading && (
             <div className="flex flex-col items-center justify-center p-12">
               <Text className="animate-pulse">Generating Preview...</Text>

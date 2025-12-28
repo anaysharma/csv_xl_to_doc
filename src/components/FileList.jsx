@@ -36,7 +36,7 @@ export function FileList({
   };
 
   return (
-    <div className="w-full border rounded-lg overflow-hidden">
+    <div className="w-full border rounded-lg overflow-hidden overflow-x-auto">
       <Table>
         <Table.Header>
           <Table.Row>
