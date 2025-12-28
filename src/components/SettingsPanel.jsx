@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Input, Label, Text, Container, Heading } from "@medusajs/ui";
-import { ParsedSettings } from "../utils/types"; // Assuming TS structure mentally but writing JS
-import { Cog6Tooth, XMark } from "@medusajs/icons"
+// Removed icons to prevent build errors. Using text/known icons.
+import { Trash } from "@medusajs/icons" 
 
 export function SettingsPanel({ config, onConfigChange, isOpen, onToggle }) {
     
@@ -42,7 +42,7 @@ export function SettingsPanel({ config, onConfigChange, isOpen, onToggle }) {
         return (
             <div className="w-full flex justify-end">
                 <Button variant="transparent" onClick={onToggle} className="text-ui-fg-subtle gap-2">
-                     <Cog6Tooth /> Configure Report
+                     Configure Report
                 </Button>
             </div>
         )
@@ -53,7 +53,7 @@ export function SettingsPanel({ config, onConfigChange, isOpen, onToggle }) {
             <div className="flex justify-between items-center border-b pb-2 mb-2">
                 <Heading level="h2" className="text-ui-fg-base text-md">Configuration</Heading>
                 <Button variant="transparent" size="small" onClick={onToggle}>
-                    <XMark />
+                    Close
                 </Button>
             </div>
 
@@ -93,12 +93,28 @@ export function SettingsPanel({ config, onConfigChange, isOpen, onToggle }) {
 
                 <div className="space-y-2">
                     <Label className="text-ui-fg-subtle text-small">Number of Terms (Rows/Student)</Label>
-                    <Input 
-                        type="number" 
-                        min={1} 
-                        value={config.rowsPerStudent || 3}
-                        onChange={(e) => handleTermsCountChange(e.target.value)}
-                    />
+                    <div className="flex items-center gap-3">
+                        <Button 
+                            variant="secondary" 
+                            size="small"
+                            onClick={() => handleTermsCountChange((config.rowsPerStudent || 3) - 1)}
+                            disabled={(config.rowsPerStudent || 3) <= 1}
+                            className="w-8 h-8 p-0 flex items-center justify-center"
+                        >
+                            -
+                        </Button>
+                        <Text className="text-ui-fg-base font-medium w-4 text-center">
+                            {config.rowsPerStudent || 3}
+                        </Text>
+                        <Button 
+                            variant="secondary" 
+                            size="small" 
+                            onClick={() => handleTermsCountChange((config.rowsPerStudent || 3) + 1)}
+                            className="w-8 h-8 p-0 flex items-center justify-center"
+                        >
+                            +
+                        </Button>
+                    </div>
                 </div>
             </div>
 
