@@ -40,6 +40,8 @@ function App() {
     headerImage: null,
   });
 
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const pdfContainerRef = useRef(null);
 
   const handleUpload = async (acceptedFiles) => {
@@ -152,7 +154,9 @@ function App() {
   };
 
   const handleDownload = async (file) => {
-    if (file.status !== "success") return;
+    if (file.status !== "success" || isGenerating) return;
+    setIsGenerating(true);
+    const toastId = toast.loading(`Generating DOCX for ${file.name}...`);
     try {
       const blob = await generateWordDocument(
         file.data.students,
@@ -161,50 +165,17 @@ function App() {
         config,
       );
       saveDocument(blob, file.name);
+      toast.dismiss(toastId);
       toast.success(`Downloaded ${file.name}`);
     } catch (e) {
+      toast.dismiss(toastId);
       toast.error("Download failed", { description: e.message });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  const handleBulkDownload = async () => {
-    const filesToDownload = files.filter(
-      (f) => selectedFiles.includes(f.id) && f.status === "success",
-    );
-    if (filesToDownload.length === 0) return;
 
-    if (filesToDownload.length === 1) {
-      await handleDownload(filesToDownload[0]);
-      return;
-    }
-
-    const zip = new JSZip();
-    let count = 0;
-
-    toast.info("Generating Zip", { description: "Please wait..." });
-
-    for (const file of filesToDownload) {
-      try {
-        const blob = await generateWordDocument(
-          file.data.students,
-          file.data.subjects,
-          file.name,
-          config,
-        );
-        const docName = file.name.replace(/\.csv$/i, "_Report.docx");
-        zip.file(docName, blob);
-        count++;
-      } catch (e) {
-        console.error(`Failed to generate ${file.name} for zip`, e);
-      }
-    }
-
-    if (count > 0) {
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, "reports.zip");
-      toast.success("Downloaded Zip");
-    }
-  };
 
   const generatePdfBlob = async (file) => {
     const docBlob = await generateWordDocument(
@@ -334,13 +305,15 @@ function App() {
       return;
     }
 
+    // Single file bulk download
     if (filesToDownload.length === 1) {
       await handleDownloadPdf(filesToDownload[0]);
       return;
     }
 
+    setIsGenerating(true);
     const toastId = toast.loading("Generating PDFs...", {
-      description: "This might take a while.",
+      description: "Starting generation...",
     });
 
     try {
@@ -349,6 +322,15 @@ function App() {
 
       for (const file of filesToDownload) {
         try {
+          // Update toast to show progress
+          toast.loading("Generating PDFs...", {
+            id: toastId,
+            description: `Processing ${count + 1}/${filesToDownload.length}: ${file.name}`,
+          });
+          
+          // Small delay to ensure toast updates visible
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
           const pdfBlob = await generatePdfBlob(file);
           const pdfName = file.name.replace(/\.[^/.]+$/, "") + ".pdf";
           zip.file(pdfName, pdfBlob);
@@ -359,15 +341,83 @@ function App() {
       }
 
       if (count > 0) {
+        toast.loading("Zipping files...", { id: toastId, description: "Finalizing archive..." });
         const zipContent = await zip.generateAsync({ type: "blob" });
         saveAs(zipContent, "reports_pdf.zip");
+        toast.dismiss(toastId);
         toast.success("Downloaded PDF Zip");
+      } else {
+        toast.dismiss(toastId);
+        toast.error("No PDFs were generated successfully.");
       }
     } catch (e) {
+      toast.dismiss(toastId);
       toast.error("PDF Generation Failed", { description: e.message });
     } finally {
+      // Cleanup
       if (pdfContainerRef.current) pdfContainerRef.current.innerHTML = "";
+      setIsGenerating(false);
+    }
+  };
+
+  const handleBulkDownloadDocx = async () => {
+    const filesToDownload = files.filter(
+      (f) => selectedFiles.includes(f.id) && f.status === "success",
+    );
+    if (filesToDownload.length === 0 || isGenerating) return;
+
+    if (filesToDownload.length === 1) {
+      await handleDownload(filesToDownload[0]);
+      return;
+    }
+
+    setIsGenerating(true);
+    const toastId = toast.loading("Generating DOCX Files...", {
+      description: "Starting generation...",
+    });
+
+    try {
+      const zip = new JSZip();
+      let count = 0;
+
+      for (const file of filesToDownload) {
+        try {
+          toast.loading("Generating DOCX Files...", {
+             id: toastId,
+             description: `Processing ${count + 1}/${filesToDownload.length}: ${file.name}`,
+          });
+          
+          await new Promise((resolve) => setTimeout(resolve, 50));
+
+          const blob = await generateWordDocument(
+            file.data.students,
+            file.data.subjects,
+            file.name,
+            config,
+          );
+          const docName = file.name.replace(/\.csv$/i, "_Report.docx");
+          zip.file(docName, blob);
+          count++;
+        } catch (e) {
+          console.error(`Failed to generate ${file.name} for zip`, e);
+        }
+      }
+
+      if (count > 0) {
+        toast.loading("Zipping files...", { id: toastId, description: "Finalizing archive..." });
+        const zipContent = await zip.generateAsync({ type: "blob" });
+        saveAs(zipContent, "reports_docx.zip");
+        toast.dismiss(toastId);
+        toast.success("Downloaded DOCX Zip");
+      } else {
+        toast.dismiss(toastId);
+        toast.error("No DOCX files were generated successfully.");
+      }
+    } catch (e) {
       toast.dismiss(toastId);
+      toast.error("Generation failed", { description: e.message });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -404,19 +454,20 @@ function App() {
                 variant="secondary"
                 className="flex-1 sm:flex-none justify-center"
                 onClick={() => setSelectedFiles([])}
+                disabled={isGenerating}
               >
                 Cancel
               </Button>
 
               <DropdownMenu>
                 <DropdownMenu.Trigger asChild>
-                  <Button className="flex-1 sm:flex-none justify-center">
+                  <Button className="flex-1 sm:flex-none justify-center" disabled={isGenerating}>
                     <ArrowDownTray />
                     Download ({selectedFiles.length})
                   </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
-                  <DropdownMenu.Item onClick={handleBulkDownload}>
+                  <DropdownMenu.Item onClick={handleBulkDownloadDocx}>
                     Download as DOCX
                   </DropdownMenu.Item>
                   <DropdownMenu.Item onClick={handleBulkDownloadPdf}>
