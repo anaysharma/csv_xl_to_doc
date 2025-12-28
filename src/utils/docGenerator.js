@@ -139,7 +139,14 @@ export const generateWordDocument = async (
   students,
   subjects,
   originalFileName,
+  config = {}
 ) => {
+  const { 
+    schoolName = "PODAR WORLD SCHOOL, BADWAI BHOPAL", 
+    reportTitle = "RESULT ANALYSIS 2025-26", 
+    headerImage 
+  } = config;
+
   // Determine Class Name from filename (e.g., "Result Sheet - Grade X.csv")
   let baseName = originalFileName.replace(/\.csv$/i, "");
   let className = `CLASS ${baseName.toUpperCase()}`;
@@ -150,7 +157,26 @@ export const generateWordDocument = async (
     }
   }
 
-  const headerImgBuffer = await fetchImage();
+  let headerImgBuffer = null;
+  if (headerImage) {
+      if (typeof headerImage === 'string') {
+          // Data URL or Path
+          if (headerImage.startsWith('data:')) {
+              // Convert data URL to buffer
+               const res = await fetch(headerImage);
+               headerImgBuffer = await res.arrayBuffer();
+          } else {
+             // Path
+             const res = await fetch(headerImage);
+             if (res.ok) headerImgBuffer = await res.arrayBuffer();
+          }
+      } else if (headerImage instanceof File || headerImage instanceof Blob) {
+           headerImgBuffer = await headerImage.arrayBuffer();
+      }
+  } else {
+      // Default fallback
+      headerImgBuffer = await fetchImage();
+  }
 
   // We build a list of children for the document (sections not typically iterated in this library version in same way)
   // Actually docx library uses 'sections'. Each student is a Page Break usually.
@@ -185,7 +211,7 @@ export const generateWordDocument = async (
     children.push(
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        children: [new TextRun({ text: TEXT_SCHOOL, bold: true, size: 28 })], // 14pt = 28 half-pt
+        children: [new TextRun({ text: schoolName, bold: true, size: 28 })], // 14pt = 28 half-pt
       }),
     );
 
@@ -193,7 +219,7 @@ export const generateWordDocument = async (
     children.push(
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        children: [new TextRun({ text: TEXT_REPORT, bold: true, size: 24 })],
+        children: [new TextRun({ text: reportTitle, bold: true, size: 24 })],
       }),
     );
 
