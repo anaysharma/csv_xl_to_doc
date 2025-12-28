@@ -181,7 +181,7 @@ function App() {
   return (
     <div className="flex flex-col items-center min-h-screen w-full bg-ui-bg-subtle p-6 overflow-auto">
       <Toaster />
-      <Container className="w-full max-w-4xl p-4 sm:p-6 flex flex-col gap-4">
+      <Container className="w-full max-w-4xl p-3 sm:p-6 flex flex-col gap-2 sm:gap-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
             <Heading level="h1">Report Generator</Heading>

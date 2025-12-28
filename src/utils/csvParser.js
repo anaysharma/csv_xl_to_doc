@@ -1,4 +1,5 @@
 import Papa from "papaparse";
+import { read, utils } from "xlsx";
 
 const normalizeScore = (obtained, total) => {
   let obt = parseFloat(obtained);
@@ -104,6 +105,42 @@ const processRows = (lines, subjects = []) => {
 
 export const parseCSV = (file) => {
   return new Promise((resolve, reject) => {
+    // Check for Excel extension
+    const isExcel = file.name.endsWith(".xlsx") || file.name.endsWith(".xls");
+
+    if (isExcel) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = e.target.result;
+                const workbook = read(data, { type: 'array' });
+                // We assume data is in the first sheet for single file upload
+                // Or we could return all sheets but the current architecture expects one "file" to ensure one report set
+                // Let's iterate all sheets and merge them? Or just pick first?
+                // The requirements say "Import Google Sheet" -> fetches all sheets.
+                // For local Excel upload, file object implies one item in file list.
+                // Let's just take the first visible sheet for now to match single CSV behavior,
+                // OR we can return multiple datasets, but parseCSV signature expects { students, subjects }.
+                // If we want to support multi-sheet Excel, we'd need to change App.jsx logic for "Upload".
+                // Let's stick to First Sheet for simple "File Upload" to keep it compatible with "One File -> One Report" visual.
+                // (The Google Sheet Logic explicitly creates multiple file entries).
+                
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = utils.sheet_to_json(worksheet, { header: 1 });
+                
+                const { students, subjects } = processRows(jsonData);
+                resolve({ students, subjects });
+            } catch (err) {
+                reject(err);
+            }
+        };
+        reader.onerror = (err) => reject(err);
+        reader.readAsArrayBuffer(file);
+        return; 
+    }
+
+    // Default to CSV
     Papa.parse(file, {
       complete: (results) => {
         try {

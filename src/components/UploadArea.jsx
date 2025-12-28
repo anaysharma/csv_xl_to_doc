@@ -8,7 +8,11 @@ export function UploadArea({ onUpload, onUrlImport, isProcessing }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: onUpload,
-    accept: { "text/csv": [".csv"] },
+    accept: { 
+        "text/csv": [".csv"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.ms-excel": [".xls"]
+    },
     multiple: true,
   });
 
@@ -40,7 +44,7 @@ export function UploadArea({ onUpload, onUrlImport, isProcessing }) {
 
         <div className="text-center">
           <Text weight="plus" className="text-ui-fg-base text-sm">
-            Click to upload multiple CSVs
+            Click to upload CSV or Excel files
           </Text>
           <Text className="text-ui-fg-subtle text-xs">
             or drag and drop them here
