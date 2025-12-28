@@ -8,10 +8,12 @@ export function UploadArea({ onUpload, onUrlImport, isProcessing }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: onUpload,
-    accept: { 
-        "text/csv": [".csv"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-        "application/vnd.ms-excel": [".xls"]
+    accept: {
+      "text/csv": [".csv"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
+      "application/vnd.ms-excel": [".xls"],
     },
     multiple: true,
   });
@@ -29,9 +31,9 @@ export function UploadArea({ onUpload, onUrlImport, isProcessing }) {
         className={clx(
           "w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors gap-2 p-4",
           {
-            "border-ui-border-interactive bg-ui-bg-base hover:bg-ui-bg-base-hover":
+            "border-ui-border-strong bg-ui-bg-base hover:bg-ui-bg-base-hover":
               !isDragActive,
-            "border-blue-500 bg-blue-50": isDragActive,
+            "border-ui-border-interactive bg-blue-500/5": isDragActive,
             "opacity-50 cursor-not-allowed": isProcessing,
           },
         )}
@@ -60,7 +62,6 @@ export function UploadArea({ onUpload, onUrlImport, isProcessing }) {
           <Input
             placeholder="Paste Google Sheet Link"
             className="pl-8"
-            size="small"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             disabled={isProcessing}
@@ -68,7 +69,6 @@ export function UploadArea({ onUpload, onUrlImport, isProcessing }) {
         </div>
         <Button
           variant="secondary"
-          size="small"
           onClick={handleImport}
           disabled={!url || isProcessing}
           isLoading={isProcessing}

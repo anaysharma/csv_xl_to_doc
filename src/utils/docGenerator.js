@@ -139,12 +139,12 @@ export const generateWordDocument = async (
   students,
   subjects,
   originalFileName,
-  config = {}
+  config = {},
 ) => {
-  const { 
-    schoolName = "PODAR WORLD SCHOOL, BADWAI BHOPAL", 
-    reportTitle = "RESULT ANALYSIS 2025-26", 
-    headerImage 
+  const {
+    schoolName = "PODAR WORLD SCHOOL, BADWAI BHOPAL",
+    reportTitle = "RESULT ANALYSIS 2025-26",
+    headerImage,
   } = config;
 
   // Determine Class Name from filename (e.g., "Result Sheet - Grade X.csv")
@@ -159,23 +159,23 @@ export const generateWordDocument = async (
 
   let headerImgBuffer = null;
   if (headerImage) {
-      if (typeof headerImage === 'string') {
-          // Data URL or Path
-          if (headerImage.startsWith('data:')) {
-              // Convert data URL to buffer
-               const res = await fetch(headerImage);
-               headerImgBuffer = await res.arrayBuffer();
-          } else {
-             // Path
-             const res = await fetch(headerImage);
-             if (res.ok) headerImgBuffer = await res.arrayBuffer();
-          }
-      } else if (headerImage instanceof File || headerImage instanceof Blob) {
-           headerImgBuffer = await headerImage.arrayBuffer();
+    if (typeof headerImage === "string") {
+      // Data URL or Path
+      if (headerImage.startsWith("data:")) {
+        // Convert data URL to buffer
+        const res = await fetch(headerImage);
+        headerImgBuffer = await res.arrayBuffer();
+      } else {
+        // Path
+        const res = await fetch(headerImage);
+        if (res.ok) headerImgBuffer = await res.arrayBuffer();
       }
+    } else if (headerImage instanceof File || headerImage instanceof Blob) {
+      headerImgBuffer = await headerImage.arrayBuffer();
+    }
   } else {
-      // Default fallback
-      headerImgBuffer = await fetchImage();
+    // Default fallback
+    headerImgBuffer = await fetchImage();
   }
 
   // We build a list of children for the document (sections not typically iterated in this library version in same way)

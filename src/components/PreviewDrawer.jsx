@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Drawer, Heading, Badge, Text, clx } from "@medusajs/ui";
 import { renderAsync } from "docx-preview";
 import { ArrowDownTray } from "@medusajs/icons";
-import html2pdf from 'html2pdf.js';
+import html2pdf from "html2pdf.js";
 import { generateWordDocument } from "../utils/docGenerator";
 
 export function PreviewDrawer({ open, onClose, file }) {
@@ -55,27 +55,27 @@ export function PreviewDrawer({ open, onClose, file }) {
 
   const handleDownloadPdf = async () => {
     if (!containerRef.current) return;
-    
+
     // We can show a toast or loading state here if desired
-    
+
     const element = containerRef.current;
-    
+
     // html2pdf configuration
     const opt = {
-      margin:       10, // mm
-      filename:     (file.name.replace(/\.[^/.]+$/, "") || "document") + ".pdf",
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin: 10, // mm
+      filename: (file.name.replace(/\.[^/.]+$/, "") || "document") + ".pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 
     try {
-        await html2pdf().set(opt).from(element).save();
+      await html2pdf().set(opt).from(element).save();
     } catch (e) {
-        console.error("PDF generation failed", e);
-        // Could set an error state here or toast
+      console.error("PDF generation failed", e);
+      // Could set an error state here or toast
     }
-  }
+  };
 
   if (!file) return null;
 
@@ -109,13 +109,13 @@ export function PreviewDrawer({ open, onClose, file }) {
           />
         </Drawer.Body>
         <Drawer.Footer className="flex justify-end gap-2">
-            <button 
-                onClick={handleDownloadPdf}
-                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors gap-2 disabled:opacity-50"
-                disabled={loading}
-            >
-                <ArrowDownTray /> Download PDF
-            </button>
+          <button
+            onClick={handleDownloadPdf}
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors gap-2 disabled:opacity-50"
+            disabled={loading}
+          >
+            <ArrowDownTray /> Download PDF
+          </button>
           <Drawer.Close asChild>
             <button className="text-ui-fg-subtle hover:text-ui-fg-base text-sm px-4 py-2">
               Close

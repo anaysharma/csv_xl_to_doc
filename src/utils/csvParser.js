@@ -16,7 +16,7 @@ const processRows = (lines, subjects = [], config = {}) => {
   const rowsPerStudent = config.rowsPerStudent || 3;
   const defaultTermNames = config.termNames || ["PT I", "TERM I", "PT II"];
 
-  const rowOffsets = Array.from({length: rowsPerStudent}, (_, i) => i);
+  const rowOffsets = Array.from({ length: rowsPerStudent }, (_, i) => i);
 
   // 1. Detect Subjects if not provided
   let headerIdx = -1;
@@ -67,7 +67,7 @@ const processRows = (lines, subjects = [], config = {}) => {
 
         let examName = (r[2] || "").toString().trim();
         if (!examName) {
-           examName = defaultTermNames[offset] || `Term ${offset + 1}`;
+          examName = defaultTermNames[offset] || `Term ${offset + 1}`;
         }
 
         const scores = {};
@@ -98,24 +98,24 @@ export const parseCSV = (file, config = {}) => {
     const isExcel = file.name.endsWith(".xlsx") || file.name.endsWith(".xls");
 
     if (isExcel) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = e.target.result;
-                const workbook = read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = utils.sheet_to_json(worksheet, { header: 1 });
-                
-                const { students, subjects } = processRows(jsonData, [], config);
-                resolve({ students, subjects });
-            } catch (err) {
-                reject(err);
-            }
-        };
-        reader.onerror = (err) => reject(err);
-        reader.readAsArrayBuffer(file);
-        return; 
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = e.target.result;
+          const workbook = read(data, { type: "array" });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = utils.sheet_to_json(worksheet, { header: 1 });
+
+          const { students, subjects } = processRows(jsonData, [], config);
+          resolve({ students, subjects });
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsArrayBuffer(file);
+      return;
     }
 
     // Default to CSV

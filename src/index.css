@@ -2,9 +2,155 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Override Medusa UI Primary (Inverted) Button Colors */
+  --bg-base-inverted: #2563eb !important;
+  --bg-base-inverted-hover: #1d4ed8 !important;
+  --bg-base-inverted-pressed: #1e40af !important;
+
+  --fg-on-inverted: #ffffff !important;
+
+  /* Additional potential variable names for safety */
+  --ui-bg-base-inverted: #2563eb !important;
+  --ui-bg-base-inverted-hover: #1d4ed8 !important;
+  --ui-bg-base-inverted-pressed: #1e40af !important;
+  --ui-fg-on-inverted: #ffffff !important;
+}
+
 /* Ensure full height body for centering if needed */
 body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+}
+
+/* Ensure proper rendering for docx-preview */
+.docx-wrapper {
+  background-color: white !important;
+  color: black !important;
+}
+
+.docx {
+  background-color: white !important;
+  color: black !important;
+}
+
+.docx > section {
+  background-color: white !important;
+  color: black !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force white background for all elements */
+.docx * {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Ensure images are visible */
+.docx img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* PDF Generation Styles */
+.docx-wrapper {
+  width: 794px !important;
+  max-width: 794px !important;
+  background-color: white !important;
+  color: black !important;
+  font-family: Arial, sans-serif !important;
+  line-height: 1.5 !important;
+  box-sizing: border-box !important;
+}
+
+.docx {
+  width: 100% !important;
+  background-color: white !important;
+  color: black !important;
+}
+
+.docx > section {
+  width: 100% !important;
+  min-height: 1123px !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  background-color: white !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Force proper table rendering */
+.docx table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.docx td,
+.docx th {
+  border: 1px solid black !important;
+  padding: 4px 8px !important;
+  vertical-align: top !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Text alignment fixes */
+.docx p,
+.docx div,
+.docx span {
+  text-align: left !important;
+  margin: 2px 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Headings */
+.docx h1,
+.docx h2,
+.docx h3,
+.docx h4,
+.docx h5,
+.docx h6 {
+  text-align: center !important;
+  margin: 10px 0 !important;
+  page-break-after: avoid !important;
+}
+
+/* Images */
+.docx img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+  page-break-inside: avoid !important;
+}
+
+/* Manual page breaks */
+.page-break {
+  page-break-before: always !important;
+  break-before: page !important;
+}
+
+.no-break {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+/* Lists */
+.docx ul,
+.docx ol {
+  margin: 5px 0 5px 20px !important;
+  padding: 0 !important;
+}
+
+/* Ensure visibility */
+.docx * {
+  background-color: white !important;
+  color: black !important;
+  font-family: inherit !important;
 }
